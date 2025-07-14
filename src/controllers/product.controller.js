@@ -37,3 +37,21 @@ export const eliminar = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
+export const listarProductos = async (req, res) => {
+  try {
+    const { categoria, nombre } = req.query;
+
+    let filtro = {};
+
+    if (categoria) filtro.categoria = categoria;
+    if (nombre) {
+      filtro.nombre_producto = { $regex: nombre, $options: 'i' };
+    }
+
+    const productos = await Producto.find(filtro);
+    res.json(productos);
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al obtener productos', error: err.message });
+  }
+};
