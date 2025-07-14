@@ -17,3 +17,19 @@ export const login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const signUp = async (req, res) => {
+  const { username, contraseña } = req.body;
+  try {
+    const usuarioExistente = await Usuario.findOne({ username });
+    if (usuarioExistente) return res.status(400).json({ mensaje: 'Ya existe el usuario' });
+
+    const hash = await bcrypt.hash(contraseña, 10);
+    const nuevoUsuario = new Usuario({ username, contraseña: hash });
+    await nuevoUsuario.save();
+
+    res.status(201).json({ mensaje: 'Usuario registrado' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
